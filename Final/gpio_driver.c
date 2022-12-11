@@ -15,7 +15,7 @@ static dev_t my_device_nr;
 static struct class *my_class;
 static struct cdev my_device;
 
-#define DRIVER_NAME "my_gpio_driver"
+#define DRIVER_NAME "gpio_driver"
 #define DRIVER_CLASS "MyModuleClass"
 
 #define pinBOTTON   6
@@ -64,9 +64,11 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
         break;
     case LOSE:
         gpio_set_value(pinRED, 1);
-    case DROW:
+		break;
+    case DRAW:
         gpio_set_value(pinBLUE, 0);
         gpio_set_value(pinRED, 0);
+		break;
     default:
         break;
     }
@@ -135,13 +137,13 @@ static int __init ModuleInit(void) {
 
 	/* GPIO pinBOTTON init */
 	if(gpio_request(pinBOTTON, "rpi-gpio-6")) {
-		printk("Can not allocate GPIO 6\n");
+		printk("Can not allocate GPIO pinBOTTON\n");
 		goto AddError;
 	}
 
 	/* Set GPIO pinBOTTON direction */
 	if(gpio_direction_input(pinBOTTON)) {
-		printk("Can not set GPIO 6 to input!\n");
+		printk("Can not set GPIO pinBOTTON to input!\n");
 		goto Gpio6Error;
 	}
 
@@ -159,7 +161,7 @@ static int __init ModuleInit(void) {
 	}
 
     /* GPIO pinBLUE init */
-	if(gpio_request(pinBLUE, "rpi-gpio-9")) {
+	if(gpio_request(pinBLUE, "rpi-gpio-10")) {
 		printk("Can not allocate GPIO pinBLUE\n");
 		goto AddError;
 	}
@@ -169,7 +171,6 @@ static int __init ModuleInit(void) {
 		printk("Can not set GPIO pinBLUE to output!\n");
 		goto Gpio10Error;
 	}
-
 
 	return 0;
 Gpio6Error:
@@ -191,9 +192,13 @@ ClassError:
  * @brief This function is called, when the module is removed from the kernel
  */
 static void __exit ModuleExit(void) {
-	gpio_set_value(pinBOTTON, 0);
+	gpio_set_value(pinRED, 0);
+	gpio_set_value(pinBLUE, 0);
+
+	gpio_free(pinBOTTON);
 	gpio_free(pinRED);
 	gpio_free(pinBLUE);
+
 	cdev_del(&my_device);
 	device_destroy(my_class, my_device_nr);
 	class_destroy(my_class);
