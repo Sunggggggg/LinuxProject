@@ -2,9 +2,6 @@
 #include<stdlib.h>
 #include<unistd.h>
 #include<fcntl.h>
-#include <linux/jiffies.h>
-
-#define NOW     jiffies
 
 #define DRAW    2
 #define WIN     1
@@ -55,7 +52,7 @@ int main(int argc, char **argv){
     printf("Opening main dev...!!!\n");
 
     int score[] = {0,0};
-    char on = 1, off = 0, al = 3;
+    char on = WIN, off = LOSE, al = DRAW;
     char button_state_now = 0;
     int delay_time = 1000000;
     int result = 0;
@@ -78,7 +75,6 @@ int main(int argc, char **argv){
             write(dev_gpio,&off, 1);
             score[1]++;
             break;
- 
         default:
             break;
         }
