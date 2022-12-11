@@ -64,18 +64,17 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
         break;
     case LOSE:
         gpio_set_value(pinRED, 1);
-		break;
+	break;
     case DRAW:
         gpio_set_value(pinBLUE, 0);
         gpio_set_value(pinRED, 0);
-		break;
+	break;
     default:
         break;
     }
     /* Calculate data */
-	delta = to_copy - not_copied;
-
-	return delta;
+    delta = to_copy - not_copied;
+    return delta;
 }
 /**
  * @brief This function is called, when the device file is opened
