@@ -86,5 +86,6 @@ int main(int argc, char **argv){
 
     close(dev_gpio);
     close(dev_fnd);
+    
     return 0;
 }
