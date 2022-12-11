@@ -2,7 +2,7 @@ obj-m += gpio_driver.o
 obj-m += fnd_driver.o
 obj-m += motor_driver.o
 
-KDIR 	= ~/working/kernel
+KDIR 	= ~/workspace/kernel
 RESULT 	= main
 SRC 	= $(RESULT).c
 CCC 	= gcc
