@@ -5,11 +5,9 @@
 #include <linux/uaccess.h>
 #include <linux/pwm.h>
 
-#define SERVO 13
-
 /* Meta Information */
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Embedded System");
+MODULE_AUTHOR("Johannes 4 GNU/Linux");
 MODULE_DESCRIPTION("A simple driver to access the Hardware PWM IP");
 
 /* Variables for device and device class */
@@ -17,7 +15,7 @@ static dev_t my_device_nr;
 static struct class *my_class;
 static struct cdev my_device;
 
-#define DRIVER_NAME "myMotordriver"
+#define DRIVER_NAME "my_pwm_driver"
 #define DRIVER_CLASS "MyModuleClass"
 
 /* Variables for pwm  */
@@ -45,6 +43,7 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
 
 	/* Calculate data */
 	delta = to_copy - not_copied;
+
 	return delta;
 }
 
@@ -75,7 +74,7 @@ static struct file_operations fops = {
  * @brief This function is called, when the module is loaded into the kernel
  */
 static int __init ModuleInit(void) {
-	printk("Hello, Motor Kernel!\n");
+	printk("Hello, Kernel!\n");
 
 	/* Allocate a device nr */
 	if( alloc_chrdev_region(&my_device_nr, 0, 1, DRIVER_NAME) < 0) {
@@ -105,7 +104,7 @@ static int __init ModuleInit(void) {
 		goto AddError;
 	}
 
-	pwm0 = pwm_request(SERVO, "my-pwm");
+	pwm0 = pwm_request(0, "my-pwm");
 	if(pwm0 == NULL) {
 		printk("Could not get PWM0!\n");
 		goto AddError;
@@ -134,8 +133,9 @@ static void __exit ModuleExit(void) {
 	device_destroy(my_class, my_device_nr);
 	class_destroy(my_class);
 	unregister_chrdev_region(my_device_nr, 1);
-	printk("Goodbye, Motor Kernel\n");
+	printk("Goodbye, Kernel\n");
 }
 
 module_init(ModuleInit);
 module_exit(ModuleExit);
+
