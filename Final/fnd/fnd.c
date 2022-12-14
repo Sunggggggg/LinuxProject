@@ -63,5 +63,7 @@ int main(int argc, char **argv){
             else score[1]++;
         }
         FND(dev_fnd, score);
+
+        usleep(1000000);
     }
 }
