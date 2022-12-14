@@ -18,10 +18,6 @@ static struct cdev my_device;
 #define DRIVER_NAME "gpio_driver"
 #define DRIVER_CLASS "MyModuleClass"
 
-#define pinBOTTON   6
-#define pinRED      9
-#define pinBLUE     10
-
 /**
  * @brief Read data out of the buffer
  */
@@ -33,7 +29,7 @@ static ssize_t driver_read(struct file *File, char *user_buffer, size_t count, l
 	to_copy = min(count, sizeof(tmp));
 
 	/* Read value of button */
-	tmp = gpio_get_value(pinBOTTON) + '0';
+	tmp = gpio_get_value(6) + '0';
 
 	/* Copy data to user */
 	not_copied = copy_to_user(user_buffer, &tmp, to_copy);
@@ -56,14 +52,14 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
 
     switch (result) {
     case '1':
-        gpio_set_value(pinBLUE, 1);
+        gpio_set_value(10, 1);
         break;
     case '0':
-        gpio_set_value(pinRED, 1);
+        gpio_set_value(9, 1);
 		break;
     case '2':
-        gpio_set_value(pinBLUE, 0);
-        gpio_set_value(pinRED, 0);
+        gpio_set_value(10, 0);
+        gpio_set_value(9, 0);
 		break;
     default:
 		printk("Invalid Input!\n");
@@ -133,49 +129,49 @@ static int __init ModuleInit(void) {
 	}
 
 	/* GPIO pinBOTTON init */
-	if(gpio_request(pinBOTTON, "rpi-gpio-6")) {
+	if(gpio_request(6, "rpi-gpio-6")) {
 		printk("Can not allocate GPIO pinBOTTON\n");
 		goto AddError;
 	}
 
 	/* Set GPIO pinBOTTON direction */
-	if(gpio_direction_input(pinBOTTON)) {
+	if(gpio_direction_input(6)) {
 		printk("Can not set GPIO pinBOTTON to input!\n");
 		goto Gpio6Error;
 	}
 
 
 	/* GPIO pinRED init */
-	if(gpio_request(pinRED, "rpi-gpio-9")) {
+	if(gpio_request(9, "rpi-gpio-9")) {
 		printk("Can not allocate GPIO pinRED\n");
 		goto AddError;
 	}
 
 	/* Set GPIO pinRED direction */
-	if(gpio_direction_output(pinRED, 0)) {
+	if(gpio_direction_output(9, 0)) {
 		printk("Can not set GPIO pinRED to output!\n");
 		goto Gpio9Error;
 	}
 
     /* GPIO pinBLUE init */
-	if(gpio_request(pinBLUE, "rpi-gpio-10")) {
+	if(gpio_request(10, "rpi-gpio-10")) {
 		printk("Can not allocate GPIO pinBLUE\n");
 		goto AddError;
 	}
 
 	/* Set GPIO pinBLUE direction */
-	if(gpio_direction_output(pinBLUE, 0)) {
+	if(gpio_direction_output(10, 0)) {
 		printk("Can not set GPIO pinBLUE to output!\n");
 		goto Gpio10Error;
 	}
 
 	return 0;
 Gpio6Error:
-	gpio_free(pinBOTTON);
+	gpio_free(6);
 Gpio9Error:
-	gpio_free(pinRED);
+	gpio_free(9);
 Gpio10Error:
-	gpio_free(pinBLUE);
+	gpio_free(10);
 AddError:
 	device_destroy(my_class, my_device_nr);
 FileError:
@@ -189,13 +185,11 @@ ClassError:
  * @brief This function is called, when the module is removed from the kernel
  */
 static void __exit ModuleExit(void) {
-	gpio_set_value(pinRED, 0);
-	gpio_set_value(pinBLUE, 0);
-
-	gpio_free(pinBOTTON);
-	gpio_free(pinRED);
-	gpio_free(pinBLUE);
-
+	gpio_set_value(9, 0);
+	gpio_set_value(10, 0);
+	gpio_free(6);
+	gpio_free(9);
+	gpio_free(10);
 	cdev_del(&my_device);
 	device_destroy(my_class, my_device_nr);
 	class_destroy(my_class);
