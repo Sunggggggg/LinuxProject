@@ -12,7 +12,7 @@
 
 char seg_num[10] = {0xc0, 0xf9, 0xa4, 0xb0, 0x99, 0x92, 0x82, 0xd8, 0x80, 0x90};
 
-int FND(int dev, int* score){
+int FND(int dev, char* score){
     unsigned short data[2];
     int n = 0;
 
