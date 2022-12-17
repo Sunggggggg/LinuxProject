@@ -39,15 +39,15 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
 	switch (value) {
 	case '0':
 		printf("Turn left \n");
-		pwm_config(pwm0, 2000000*0.5 , 2000000);
+		pwm_config(pwm0, 1.0 * 1000000 , 20000000);
 		break;
 	case '1':
 		printf("Center \n");
-		pwm_config(pwm0, 2000000*1.5, 2000000);
+		pwm_config(pwm0, 1.5 * 1000000 , 20000000);
 		break;
 	case '2':
 		printf("Turn right \n");
-		pwm_config(pwm0, 2000000*2.5, 2000000);
+		pwm_config(pwm0, 2.0 * 1000000 , 20000000);
 		break;
 	}
 
