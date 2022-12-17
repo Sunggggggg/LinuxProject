@@ -7,7 +7,7 @@
 
 /* Meta Information */
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("EMSS");
+MODULE_AUTHOR("Johannes 4 GNU/Linux");
 MODULE_DESCRIPTION("A simple gpio driver for setting a LED and reading a button");
 
 /* Variables for device and device class */
@@ -15,7 +15,7 @@ static dev_t my_device_nr;
 static struct class *my_class;
 static struct cdev my_device;
 
-#define DRIVER_NAME "gpio_driver"
+#define DRIVER_NAME "my_gpio_driver"
 #define DRIVER_CLASS "MyModuleClass"
 
 /**
@@ -23,13 +23,14 @@ static struct cdev my_device;
  */
 static ssize_t driver_read(struct file *File, char *user_buffer, size_t count, loff_t *offs) {
 	int to_copy, not_copied, delta;
-	char tmp = 0;
+	char tmp[3] = " \n";
 
 	/* Get amount of data to copy */
 	to_copy = min(count, sizeof(tmp));
 
-	/* Read value of button */
-	tmp = gpio_get_value(6) + '0';
+	/* Read value of button (pin 6)*/
+	printk("Value of button: %d\n", gpio_get_value(6));
+	tmp[0] = gpio_get_value(6) + '0';
 
 	/* Copy data to user */
 	not_copied = copy_to_user(user_buffer, &tmp, to_copy);
@@ -40,9 +41,12 @@ static ssize_t driver_read(struct file *File, char *user_buffer, size_t count, l
 	return delta;
 }
 
+/**
+ * @brief Write data to buffer
+ */
 static ssize_t driver_write(struct file *File, const char *user_buffer, size_t count, loff_t *offs) {
     int to_copy, not_copied, delta;
-    unsigned char result = 0;
+    char result = 0;
 
     /*Get amount of data to copy*/
     to_copy = min(count, sizeof(result));
@@ -50,20 +54,26 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
     /*Copy data to user*/
     not_copied = copy_from_user(&result, user_buffer, to_copy);
 
+	/* Setting the LED
+		pin 9 : red / pin 10 : blue */
+	
     switch (result) {
-    case '1':
-        gpio_set_value(10, 1);
-        break;
-    case '0':
-        gpio_set_value(9, 1);
-		break;
-    case '2':
-        gpio_set_value(10, 0);
-        gpio_set_value(9, 0);
-		break;
-    default:
-		printk("Invalid Input!\n");
-        break;
+		case '1':
+			printk("User Win!\n");
+			gpio_set_value(10, 1);
+			break;
+		case '0':
+			printk("User Lose!\n");
+			gpio_set_value(9, 1);
+			break;
+		case '2':
+			printk("Draw!\n");
+			gpio_set_value(10, 0);
+			gpio_set_value(9, 0);
+			break;
+		default:
+			printk("Invalid Input!\n");
+			break;
     }
     /* Calculate data */
 	delta = to_copy - not_copied;
@@ -187,9 +197,11 @@ ClassError:
 static void __exit ModuleExit(void) {
 	gpio_set_value(9, 0);
 	gpio_set_value(10, 0);
+
 	gpio_free(6);
 	gpio_free(9);
 	gpio_free(10);
+
 	cdev_del(&my_device);
 	device_destroy(my_class, my_device_nr);
 	class_destroy(my_class);
