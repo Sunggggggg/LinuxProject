@@ -16,7 +16,7 @@ static struct class *my_class;
 static struct cdev my_device;
 
 #define DRIVER_NAME "motor_driver"
-#define DRIVER_CLASS "MyModuleClass"
+#define DRIVER_CLASS "MyMotorClass"
 
 /* Variables for pwm  */
 struct pwm_device *pwm0 = NULL;
@@ -36,10 +36,23 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
 	not_copied = copy_from_user(&value, user_buffer, to_copy);
 
 	/* Set PWM on time */
-	if(value < 'a' || value > 'j')
+	switch (value) {
+	case '0':
+		printk("Turn left \n");
+		pwm_config(pwm0, 100000000 * 2, 1000000000);
+		break;
+	case '1':
+		printk("Center \n");
+		pwm_config(pwm0, 100000000 * 5, 1000000000);
+		break;
+	case '2':
+		printk("Turn right \n");
+		pwm_config(pwm0, 100000000 * 8, 1000000000);
+		break;
+	default:
 		printk("Invalid Value\n");
-	else
-		pwm_config(pwm0, 100000000 * (value - 'a'), 1000000000);
+		break;
+	}
 
 	/* Calculate data */
 	delta = to_copy - not_copied;
@@ -50,7 +63,7 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
  * @brief This function is called, when the device file is opened
  */
 static int driver_open(struct inode *device_file, struct file *instance) {
-	printk("dev_nr - open was called!\n");
+	printk("motor_driver - open was called!\n");
 	return 0;
 }
 
@@ -58,7 +71,7 @@ static int driver_open(struct inode *device_file, struct file *instance) {
  * @brief This function is called, when the device file is opened
  */
 static int driver_close(struct inode *device_file, struct file *instance) {
-	printk("dev_nr - close was called!\n");
+	printk("motor_driver - close was called!\n");
 	return 0;
 }
 
@@ -128,6 +141,7 @@ ClassError:
 static void __exit ModuleExit(void) {
 	pwm_disable(pwm0);
 	pwm_free(pwm0);
+
 	cdev_del(&my_device);
 	device_destroy(my_class, my_device_nr);
 	class_destroy(my_class);

@@ -39,13 +39,13 @@ char buttonUpdate(int dev, char prevButtonState){
 
 int main(int argc, char **argv){
     int dev_fnd = open("/dev/fnd_driver",O_RDWR);
-    if(dev_fnd == -1){
+    if(dev == -1){
         printf("fnd driver not possible!\n");
         return -1;
     }
 
     int dev_gpio = open("/dev/gpio_driver",O_RDWR);
-    if(dev_gpio == -1){
+    if(dev == -1){
         printf("gpio driver not possible!\n");
         return -1;
     }

@@ -124,7 +124,6 @@ static struct file_operations fops = {
 	.owner = THIS_MODULE,
 	.open = driver_open,
 	.release = driver_close,
-	//.read = driver_read,
 	.write = driver_write
 };
 
@@ -349,26 +348,32 @@ static void __exit ModuleExit(void) {
 	gpio_set_value(3, 0);
 	gpio_set_value(4, 0);
 	gpio_set_value(5, 0);
+
 	gpio_set_value(7, 0);
 	gpio_set_value(8, 0);
 	gpio_set_value(16, 0);
 	gpio_set_value(17, 0);
+
 	gpio_set_value(20, 0);
 	gpio_set_value(21, 0);
 	gpio_set_value(24, 0);
 	gpio_set_value(25, 0);
+
 	gpio_free(2);
 	gpio_free(3);
 	gpio_free(4);
 	gpio_free(5);
+
 	gpio_free(7);
 	gpio_free(8);
 	gpio_free(16);
 	gpio_free(17);
+
 	gpio_free(20);
 	gpio_free(21);
 	gpio_free(24);
 	gpio_free(25);
+
 	cdev_del(&my_device);
 	device_destroy(my_class, my_device_nr);
 	class_destroy(my_class);

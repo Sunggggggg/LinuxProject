@@ -15,7 +15,7 @@ static dev_t my_device_nr;
 static struct class *my_class;
 static struct cdev my_device;
 
-#define DRIVER_NAME "my_gpio_driver"
+#define DRIVER_NAME "gpio_driver"
 #define DRIVER_CLASS "MyModuleClass"
 
 /**
@@ -59,15 +59,15 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
 	
     switch (result) {
 		case '1':
-			printk("User Win!\n");
+			printf("User Win!\n");
 			gpio_set_value(10, 1);
 			break;
 		case '0':
-			printk("User Lose!\n");
+			printf("User Lose!\n");
 			gpio_set_value(9, 1);
 			break;
 		case '2':
-			printk("Draw!\n");
+			printf("Draw!\n");
 			gpio_set_value(10, 0);
 			gpio_set_value(9, 0);
 			break;
