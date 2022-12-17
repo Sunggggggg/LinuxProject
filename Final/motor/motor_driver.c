@@ -38,19 +38,16 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t c
 	/* Set PWM on time */
 	switch (value) {
 	case '0':
-		printk("Turn left \n");
-		pwm_config(pwm0, 100000000 * 2, 1000000000);
+		printf("Turn left \n");
+		pwm_config(pwm0, 2000000*0.5 , 2000000);
 		break;
 	case '1':
-		printk("Center \n");
-		pwm_config(pwm0, 100000000 * 5, 1000000000);
+		printf("Center \n");
+		pwm_config(pwm0, 2000000*1.5, 2000000);
 		break;
 	case '2':
-		printk("Turn right \n");
-		pwm_config(pwm0, 100000000 * 8, 1000000000);
-		break;
-	default:
-		printk("Invalid Value\n");
+		printf("Turn right \n");
+		pwm_config(pwm0, 2000000*2.5, 2000000);
 		break;
 	}
 
@@ -122,7 +119,7 @@ static int __init ModuleInit(void) {
 		goto AddError;
 	}
 
-	pwm_config(pwm0, pwm_on_time, 1000000000);
+	pwm_config(pwm0, pwm_on_time, 2000000);
 	pwm_enable(pwm0);
 
 	return 0;
